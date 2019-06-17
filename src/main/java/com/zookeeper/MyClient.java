@@ -6,6 +6,8 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.BackgroundCallback;
 import org.apache.curator.framework.api.CuratorEvent;
 import org.apache.curator.framework.api.CuratorEventType;
+import org.apache.curator.framework.api.transaction.CuratorOp;
+import org.apache.curator.framework.api.transaction.CuratorTransactionResult;
 import org.apache.curator.framework.recipes.atomic.AtomicValue;
 import org.apache.curator.framework.recipes.atomic.DistributedAtomicInteger;
 import org.apache.curator.framework.recipes.barriers.DistributedDoubleBarrier;
@@ -20,6 +22,7 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
@@ -32,7 +35,24 @@ public class MyClient {
                 .build();
         build.start();
         //创建节点的方式,初始化为空
+        build.inTransaction().check().forPath("/nodeA")
+                .and()
+                .create().withMode(CreateMode.EPHEMERAL).forPath("/nodeB", "init".getBytes())
+                .and()
+                .create().withMode(CreateMode.EPHEMERAL).forPath("/nodeC", "init".getBytes())
+                .and()
+                .commit();
+        //开始事务操作
+        CuratorOp createParentNode = build.transactionOp().create().forPath("/a", "some data".getBytes());
+        CuratorOp createChildNode = build.transactionOp().create().forPath("/a/path", "other data".getBytes());
+        CuratorOp setParentNode = build.transactionOp().setData().forPath("/a", "other data".getBytes());
+        CuratorOp deleteParent = build.transactionOp().delete().forPath("/a");
 
+        Collection<CuratorTransactionResult> results = build.transaction().forOperations(createParentNode, createChildNode, setParentNode,deleteParent);
+
+        for ( CuratorTransactionResult result : results ) {
+            System.out.println(result.getForPath() + " - " + result.getType());
+        }
       //  build.create().forPath("test");
         //创建一个新的节点，节点内容是test,这里和原生的zookeeper的对象序列化方式相同
         build.create().creatingParentsIfNeeded().forPath("/test");
