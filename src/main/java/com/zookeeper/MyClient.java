@@ -23,20 +23,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
-import static org.apache.curator.framework.CuratorFrameworkFactory.builder;
 
 public class MyClient {
 
     public static void main(String[] args) throws Exception {
-        final CuratorFramework build=   CuratorFrameworkFactory.builder().connectString("ip:port")
-                .sessionTimeoutMs(5000).retryPolicy(new ExponentialBackoffRetry(1000,3))
+        final CuratorFramework build=   CuratorFrameworkFactory.builder().connectString("127.0.0.1:2181")
+                .sessionTimeoutMs(16000).retryPolicy(new ExponentialBackoffRetry(1000,3))
                 .build();
+        build.start();
         //创建节点的方式,初始化为空
-        build.create().forPath("test");
+
+      //  build.create().forPath("test");
         //创建一个新的节点，节点内容是test,这里和原生的zookeeper的对象序列化方式相同
-        build.create().forPath("test","test".getBytes());
+        build.create().creatingParentsIfNeeded().forPath("/test");
+    //    build.create().forPath("/test","test".getBytes());
         //创建一个节点，这里指定是持久化的方式
-        build.create().withMode(CreateMode.PERSISTENT).forPath("test","test".getBytes());
+        build.create().withMode(CreateMode.PERSISTENT).forPath("/test","test".getBytes());
         // 创建带有父节点的节点
         build.create().creatingParentContainersIfNeeded().withMode(CreateMode.PERSISTENT).
                 withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE).forPath("/test/test01/test01","test01".getBytes());
