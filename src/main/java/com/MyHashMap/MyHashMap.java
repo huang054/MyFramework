@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 public class MyHashMap<K, V> implements MyMap<K, V> {
 	// 定义默认数组大小 16 defaulAddSizeFactor=useSize/defaulLenth 4/16 =0.25
-	private static int defaulLenth = 1 << 4;
+	private int defaulLenth = 1 << 4;
 	// 扩容标准 所使用的 useSize /数组长度 > 0.75
 	// defaulAddSizeFactor过大 造成扩容概率变低 存储小 但是就是存 和 取效率降低
 	// 0.9 有限的数组长度空间位置内会形成链表 在存或者取值都需要进行大量的遍历和判断（逻辑）
-	private static double defaulAddSizeFactor = 0.75;
+	private  double defaulAddSizeFactor = 0.75;
 	// 使用数组位置的总是
 	private int useSize;
 	// 定义Map 骨架只要 数组之一 数组
@@ -16,7 +16,7 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
 
 	// SPRING 门面模式运用
 	public MyHashMap() {
-		this(defaulLenth, defaulAddSizeFactor);
+		table = new Entry[defaulLenth];
 	}
 
 	public MyHashMap(int length, double defaulAddSizeFactor) {

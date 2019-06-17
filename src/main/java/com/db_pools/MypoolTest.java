@@ -20,13 +20,13 @@ public class MypoolTest {
 	 */
 	public synchronized static void selctData() {
 	PooledConnection connection = poolImpl.getConnection();
-		ResultSet rs = connection.queryBysql("SELECT * FROM items");
+		ResultSet rs = connection.queryBysql("SELECT * FROM test_debug_msg");
 		System.out.println("线程名称： " + Thread.currentThread().getName());
 		try {
 			while (rs.next()) {
-				System.out.print(rs.getString("ID") + "\t\t");
-				System.out.print(rs.getString("NAME") + "\t\t");
-				System.out.print(rs.getString("PRICE") + "\t\t");
+				System.out.print(rs.getString("id") + "\t\t");
+				System.out.print(rs.getString("tag") + "\t\t");
+				System.out.print(rs.getString("msg") + "\t\t");
 				System.out.println();
 			}
 			rs.close();
@@ -39,7 +39,7 @@ public class MypoolTest {
 
 	public static void main(String[] args) {
 		// 玩的大 new 1550 客户端 jar 当然比 国内知名德鲁伊 团队
-		for (int i = 0; i < 1500; i++) {
+		for (int i = 0; i < 10; i++) {
 			new Thread(new Runnable() {
 				public void run() {
 					selctData();
