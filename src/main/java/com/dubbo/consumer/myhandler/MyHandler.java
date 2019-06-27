@@ -12,6 +12,7 @@ public class MyHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
+
        this.value=msg;
 
     }

@@ -1,5 +1,6 @@
 package com.dubbo.provide.server;
 
+import com.dubbo.common.dubbo;
 import com.dubbo.provide.myhandler.MyHandler;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -108,7 +109,9 @@ public class Bootstarp {
             try {
                 Class<?> clazz =Class.forName(className);
                 Class<?> interfaces = clazz.getInterfaces()[0];
-                registrys.put(interfaces.getName(),clazz.newInstance());
+               if(clazz.isAnnotationPresent(dubbo.class)) {
+                   registrys.put(interfaces.getName(), clazz.newInstance());
+               }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

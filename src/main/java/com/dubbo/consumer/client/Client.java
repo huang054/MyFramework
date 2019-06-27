@@ -52,7 +52,7 @@ class MethodProxy implements InvocationHandler{
 
     }
 
-    protected Object myRpcInvoke(Msg msg){
+    protected Object myRpcInvoke(Msg msg) throws NoSuchMethodException {
        final MyHandler myHandler = new MyHandler();
         EventLoopGroup group = new NioEventLoopGroup();
         try {
@@ -87,7 +87,9 @@ class MethodProxy implements InvocationHandler{
 
             group.shutdownGracefully();
         }
-
+        if(myHandler.getValue()==null){
+            throw new NoSuchMethodException("没有这个方法");
+        }
         return myHandler.getValue();
     }
 }
