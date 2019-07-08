@@ -8,6 +8,7 @@ import com.springMvc.annotation.Service;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +32,9 @@ public class ApplicationContext {
 		InputStream is = null;
 		try{
 			//1、定位
-			is = this.getClass().getClassLoader().getResourceAsStream(location);
-			
+			//is = this.getClass().getClassLoader().getResourceAsStream(location);
+			is = this.getClass().getClassLoader().getResourceAsStream("application.properties");
+
 			//2、载入
 			
 			config.load(is);
@@ -56,9 +58,22 @@ public class ApplicationContext {
 	
 	
 	//把符合条件所有的class全部找出来，注册到缓存里面去
-	private void doRegister(String packageName){
+	private void doRegister(String packageName) throws MalformedURLException {
+		System.out.println(System.getProperty("user.dir"));
+		System.out.println(System.getProperty("user.dir")+File.separator );
+		String[] strings =packageName.split("\\.");
+
+		String uri="/"+"target"+"/"+"classes";
+		for (int i=0;i<strings.length;i++){
+			uri+="/";
+			uri+=strings[i];
+		}
+		//URL url = this.getClass().getClassLoader().getResource(uri);
+		//System.out.println(url);
+
 		URL url = this.getClass().getClassLoader().getResource("/" + packageName.replaceAll("\\.", "/"));
 		File dir = new File(url.getFile());
+		System.out.println(dir.length());
 		for (File file : dir.listFiles()) {
 			//如果是一个文件夹，继续递归
 			if(file.isDirectory()){
